@@ -1,0 +1,83 @@
+------Validator------
+public static void validatePatient(PatientDTO patientDTO) throws PatientAdmissionException{
+if(!isValidDateOfBirth(patientDTO.getDateOfBirth())
+  {
+throw new PatientAdmissionException("PatientValidator.INVALID_DOB")
+  }
+}
+public static Boolean isValiDateOfBirth(LocalDate dateOfBirth) throws PatientAdmissionException{
+if(dateOfBirth.isAfter(LocalDate.now()))
+{
+return false;
+}
+else if (LocalDate.now().getYear()-dateOfBirth.getYear()>100)
+{
+return false;
+}
+else{
+return true;
+}
+}
+}
+
+----------Repository-------
+public interface PatientRepository extends CrudRepository<Patient, Integer>{
+List<Patient> getPatientByDiagnosis(String diagnosis);
+}
+
+--------Service----------
+@Service(value="patientService")
+@Transactional
+public class PatientServiceImpl implements PatientService{
+
+@Autowired
+private PatientRepository patientRepository;
+
+@Override
+public List<PatientDTO> getListOfPatients(String diagnosis)throws PatientAdmissionException{
+
+List<Patient> pList=patientRepository.getPatientBydiagnosis(diagnosis);
+
+if(pList.isEmpty()||pList.size()==0)
+{
+throws new PatientAdmissionexception("PatientService.PATIENT_UNAVAILABLE");
+
+}
+List<PatientDTO> pDTOs=new ArrayList<>();
+
+pList.stream().forEach(x->pDTOs.add(new PatientDTO().prepareDTO(x)));
+pDTOs.sort((x1,x2)->x1.getAdmissionDate().compareTo(x2.getAdmissionDate()));
+return pDTOs;
+}
+
+@Override
+public PatientDTO admitPatient(PatientDTO patientDTO) throws PatientAdmissionException{
+ 
+patientValidator.validate(patientDTO);
+Patient patient=PatientDTO.prepareEntity(patientDTO);
+
+patient=patientRepository.save(patient);
+
+patientDTO.setPatientId(patient.getPatientId());
+return patientDTO;
+}
+
+}
+
+---------Service--------
+@GetMapping(value="/patients/{diagnosis}")
+public ResponseEntity<List<PatientDTO>> getPatientsDiagnosis{
+@PathVariable @Pattern(regexp="[a-zA-Z0-9\s]+",message="{patient.diagnosis.invalid}") String diagnosis)
+throws PatientAdmissionException{
+
+List<PatientDTO> pDtol=patientService.getListOfPatients(diagnosis);
+return new ResponseEntity<>(pDtol, HttpStatus.OK);
+}
+
+@PostMapping(value="/patients")
+public ResponseEntity<PatientDTO> admitPatient(PatientDTO patientDTO) throws PatientAdmissionException{
+ 
+PatientDTO pDto2=patientService.admitPatient(patientDTO);
+return new Responsentity<>(pDto2,HttpStatus.CREATED);
+}
+}
