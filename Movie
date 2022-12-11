@@ -1,0 +1,108 @@
+----------Validator--------------
+pubic static void validate(MovieBookingDTO movieBookingDTO) throws MovieBookingException{
+if(Boolean.FALSE.equals(isValidCustomerPhoneNo(movieBookingDTO.getCustomerPhoneNo()))){
+}
+if (Bollean.FLASE.equals(isvalipaymentType(movieBookingDTO.getPaymentType())))
+throw new MovieBookingException("Validator.INVALID_PAYMENT_TYPE");
+}
+}
+public static Bollean isValidPaymentType(String paymentType){
+String paymentType1="Card";
+String paymentType2="Wallet";
+String paymentType3="NetBanking";
+if(paymentType1.equals(paymentType)||paymentType2.equals(paymentType)||paymenttype3.equals(paymenttype)){
+return true;
+}
+else 
+return flase;
+}
+
+public static Boolean isValidCustomerPhoneNo(Long customerPhoneNo){
+String mob=customerPhoneNo.toString();
+Boolean b=true;
+if(mob.length()==10){
+char c=mob.charAt(0);
+Integer a =Character.getNumericValue(c);
+if((a>=3)&&(a<=9))
+b=true;
+else
+b=false;
+return b;
+}
+else
+return false;
+}
+}
+
+---------------Repository--------------------
+public interface MovieBookingRepository extends CrudRepository<MovieBooking,Integer>{
+@Query("select m from MovieBooking m where m.customerPhoneNo=?1 and m.showDate=?2")
+List<MovieBooking> getBookibgDetails(Long customerPhoneNo,LoaclDate showDate);
+List<MoovieBooking> findByScreenName(String screenName);
+}
+----------Service---------
+@Service(value="movieBookingService")
+@Transactional
+public class MovieBookingServiceImpl implements MovieBookingService{
+@Autowired
+private MovieBookingDTO bookMovie(MovieBookingDTO movieBookingDTO) throws MovieBookingException {
+
+MovieBookingValidator.validate(movieBookingDTO);
+List<MovieBooking> movieBookingList=movieBookingRepository.getBookingDetails(movieBookingDTO.getCustomerPhoneNo(),
+        movieBookingDTO.getShowDate());
+if (Boolean.FLASE.equals(movieBookigList.isEmpty())){
+throw new MovieBookingException("MovieBookingService.BOOKING_EXISTS");
+}
+Moviebooking movieBooking=MovieBookingDTO.prepareEntity(movieBookingDTO);
+movieBooking.setBookingAmount((calculateBookingAmount(movieBooking.getNoOfSeats(),movieBooking.getScreenName()));
+Integer movieID =movieBookingRepository.save(movieBooking).getBookingId();
+movieBookingDTO.setBookingId(movieID);
+
+return MovieBookingDTO.prepareDTO(movieBooking);
+}
+@Override
+public Double calculateBookingAmount(Integer noOfSeats,String screenName){
+Double bookingAmount=0.0;
+if(screenName.equals("Rhombus")){
+bookingAmount=100.0*noOfSeats;
+
+}
+else if(screenName.equals("Sapphire")){
+bookingAmount=200.0*noOfSeats;
+
+}
+else{
+bookingAmount=300.0*noOfSeats;
+}
+return bookingAmount;
+}
+
+@Override
+public List<MovieBookingDTO> getBookingScreenName(String screenName) throws MovieBookingException{
+
+List<MovieBooking>movieBookingList=movieBookingReposistory.findByScreenName(screenName);
+if(movieBookingList.isEmpty()){
+  throw new MovieBookingException()"MovieBookingService.NO_BOOKING");
+}
+List<MovieBookingDTO> dtoList=new ArrayList<>();
+movieBookingList.stream().forEach(x->dtoList.add(new MovieBookingDTO().prepareDTO(x)));
+return dtoList;
+}
+}
+
+--------API--------
+@PostMapping(value="/movie")
+public ResponseEntity<MovieBookingDTO> bookMovie(@RequestBody @Valid MovieBookingDTO movieBookingDTO)
+     throws MovieBookingException{
+MovieBookingDTO movieBooking=movieBookingService.bookMovie(movieBookingDTO);
+return new ResponseEntity<>(movieBooking,HttpStatus.CREATED);
+}
+
+@GetMapping(value="/movie/{screenName}")
+public ResponseEntity<List<MovieBookingDTO>> getBookingByScreenName(@PathVariable String screenName)
+         throws MovieBookingException{
+
+List<MovieBookingDTO> mBDTO=movieBookingService.getBookingByScreenName(screenName);
+ return new ResponseEntity<>(mBDTO,HttpStatus.OK);
+    }
+}
