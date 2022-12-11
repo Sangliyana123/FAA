@@ -1,0 +1,115 @@
+-----------Validator--------
+public static void validateStudent(StudentDTO studentDTO) throws GlobalEducationExcetion{
+if (! isValidIntakeYear(studentDTO.getIntakeyear())){
+throw new GlobalEducationException("StudentValidator.INVALID_INTAKE_YEAR");
+}
+}
+public static Boolean isValidIntakeyear(Integer intake){
+if (intake<Localdate.noe().getyear()){
+retur false;
+}
+else{
+retur true;
+}
+}
+
+--------API-----------
+@PostMapping(value="/student")
+public ResponseEntity<StudentDTO> registerStudent(@Valid @RequestBody StudentDTO studentDTO)
+  throws GlobalEducatonException{
+StudentDTO studentdto=studentService.registerStudent(studentDTO);
+return new ResponseEntity<>(studentdto,HttpStatus.CREATED);
+
+}
+
+@GetMapping(value="/student/{country}/{intakeYear}")
+public ResponseEntity<List<StudentDTO>> findStudentByInterestedCountryAndIntakeYear(@PathVariable String country,
+          @PathVariable @Pattern(regexp="[0-9]{4}",message="{Student.intakeyear.Invalid}") Integer intakeYear)
+             throws GlobalEducationException{
+List<StudentDTO> studentdto1=studentservice.findStudentByInterestedCountryAndIntakeYear(country,intakeYear);
+return new ResponseEntity<>(studentdto1,HttpStatus.OK);
+     }
+}
+
+--------Repository---------
+nes (4 sloc)  232 Bytes
+
+public interface StudentRepository extends CrudRepository<Student,integer>
+public Optional<Student> findByEmail(String emailId);
+public List<Student> findStudentByInterestedCountryAndIntakeYear(String Country,Integer intakeYear);
+}
+
+---------Service---------
+@Service(value="/studentservice")
+public class studentServiceImpl implements StudentService{
+
+  @Autowired
+  private StudentRepository studentrepo;
+
+  @override
+  public StudentDTO registerStudent(StudentDTO studentDTO) throws GlobalEducationException{
+  StudentValidator.validateStudent(studentDTO);
+  Optional<Student>optional= studentrepo.findByEmailId(studentDTO.getEmailId());
+// Student student=optional
+//      .orElseThrow(()-> new GlobalEducationException("StudentService.STUDENT_ALREADY_EXIST"));
+    
+    if(optional.isPresent()){
+	throw new GlobalEducationException("studentService.STUDENT_ALREADY_EXIST");
+	}
+	
+	Student std= dtoToentity(studentDTO);
+	std=studentrepo.save(std);
+	StudentDTO Stu1=entityTodto(std);
+	return stu1;
+    }
+    
+     public Student dtoToentity(StudentDTO dto){
+	Student std=new Student();
+	std.setStudentId(dto.getStudentId());
+        std.setStudentName(dto.getstudentname());
+        std.setEmailId(dto.getEmailId());
+        std.setInterestedCountry(dto.getInterestedCountry());
+        std.setIntakeYear(dto.getIntakeYear());
+        std.setStudyLevel(dto.getStudyLevel());
+        std.setCourseInterested(dto.getCourseInterested());
+	return std;
+  }
+	
+	public StudentDTO entityTodto(Student std){
+	    StudentDTO dto= new StudentDTO();
+            dto.setStudentId(std.getStudentId());
+            dto.setStudentName(std.getstudentname());
+            dto.setEmailId(std.getEmailId());
+            dto.setInterestedCountry(std.getInterestedCountry());
+                        dto.setIntakeYear(std.getIntakeYear());
+            dto.setStudyLevel(std.getStudyLevel());
+            dto.setCourseInterested(std.getCourseInterested());
+	    return dto;
+	}
+    
+        @Override
+        public List<StudentDTO> findStudentByInterestedCountryAndIntakeYear(String country,Integer intakeYear)
+	     throws GlobalEducationException {
+
+	List<Student> std= studentrepo.findStudentByInterestedCountryAndIntakeYear(country,intakeYear);
+	if (std.isEmpty() || std.size() ==0) {
+		throw new GlobalEducationException{"StudentService.NO_STUDENTS_FOUND");
+}
+        List<StudentDTO> dtos = new ArrayList();
+        std.forEach(dto->{
+	StudentDTO dt= new StudentDTO();
+	       dt.setStudent
+               dt.setStudentId(dto.getStudentId());
+               dt.setStudentName(dto.getstudentname());
+              dt.setEmailId(dto.getEmailId());
+             dt.setInterestedCountry(dto.getInterestedCountry());
+             dt.setIntakeYear(dto.getIntakeYear());
+             dt.setStudyLevel(dto.getStudyLevel());
+             dt.setCourseInterested(dto.getCourseInterested());
+	     dtos.add(dt);
+          }
+          );
+          return dtos;
+          }
+          }
+   
