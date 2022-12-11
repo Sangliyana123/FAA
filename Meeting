@@ -1,0 +1,95 @@
+------Validator--------
+public static void validateMeeting(MeetingDTO meetingDTO) throws MeetingSchedulerException{
+if (isValidMeetingDate(meetingDTO.getMeetingDate())==false){
+throws new MeetingSchedulerException("MeetingValidator.INVALID_MEETING_DATE");
+}
+
+if(isValidTeamName(meetingDTO.getTeamName())==false){
+throws new MeetingSchedulerException("MeetingValidator.INVALID_TEAM_NAME");
+}
+}
+
+public static Boolean isValidTeamName(String teamName){
+if((teamName=="ETAMYSJAVA")||
+  (teamName=="ETAMYSUI")||
+  (teamName=="ETAMYSBI")||
+  (teamName=="ETAMYSMS")||
+  (teamName=="ETAMYSAI")){
+  return true;
+  }
+  return false;
+  }
+  
+public static Boolean isValidMeetingDate(LocalDate meetingDate){
+DayOfWeek day=DayOfWeek.of(meetingDate.get(ChronoField.DAY_OF_WEEK));
+if((day==DayOfWeek.SATURDAY)||(day==DayOfWeek.SUNDAY)){
+return false;
+}
+return true;
+}
+
+---------------Repository---------------
+public interface MeetingRepository extends CrudRepository<Meeting, Integer>{
+@Query("SELECT * FROM meeting m WHERE m.scheduler_name=:schedulerName")
+List<Meeting>findBySchedulerName(@Param("schedulerName") String schedulerName);
+
+@Query("SELECT * FROM meeting m WHERE m.scheduler_name=:schedulerName ANDm.meeting_date=;meetingDate")
+List<Meeting>getBySchedulerNameAndMeetingDate(@Param("schedulerName") String schedulerName,@Param("meetingDate") LocalDate meetingDate);
+
+@Query("SELECT * FROM meeting WHERE m.team_name=:teamName AND m.meeting_date=:meetingDate")
+List<Meeting> getByTeamNameAndMeetingDate(@Param("teamName")String teamName,@Param("meetingdate")LocalDate meetingDate);
+)
+
+--------------Service--------------
+@Service("meetingService")
+@Transactional
+public class MeetingServiceImpl implements MeetingService{
+
+	@Autowired
+	private MeetingRepository meetingRepository;
+
+	@Override
+	public List<MeetingDTO>getAllMeetingsOfScheduler(String schedulerName) throws MeetingSchedulerException{
+	     List<Meeting> meetingList=meetingRepository.findBySchedulerName(schedulerName);
+	     if(meetingList.isEmpty())
+		throw new MeetingSchedulerException("MeetingSerivce.NO_MEETINGS_FOUND");
+	     List<MeetingDTO>meetingDTOList= new ArrayList<>();
+             meetingList.
+	     stream().
+	     forEach(x->meetingDTOList.add(new MeetingDTO().prepareDTO(x)));
+	     meetingDTOList.sort((x1,x2)->x1.getMeetingDate().compareTo(x2.getMeeting()));
+	     return meetingDTOList;
+        }
+	
+	@Override
+	public MeetingDTO scheduleMeeting(MeetingDTO meetingDTO) throws MeetingschedulerException{
+	 MeetingValidator.validateMeeting(meetingDTO);
+         List<Meeting>meetingList=meetingRepository.findBySchedulerNameAndMeetingDate(meetingDTO.getSchedulerName(),meetingDTO.getMeetingDate());
+         if(Boolean.FALSE.equals(meetingList.isEmpty()))
+              throw new MeetingSchedulerException("MeetingService.MEETING_DATE_UNAVAILABLE");         
+         List<Meeting>teamMeetingList=meetingRepository.findByTeamNameAndMeetingDate(meetingDTO.getTeamName(),meetingDTO.getMeetingDate());
+         if(Boolean.False.equlas(teamMeetingList.isEmpty()))
+            throw new MeetingSchedulerException("MeetingService.TEAM_UNAVAILABLE");
+         Integer meetingId=meetingRepository.save(meetingDTO.prepareEntity()).getMeetingId();
+         meetingDTO.setMeetingId(meetingId);
+         return meetingDTO;
+      }
+   }
+   
+   -----------API-------------
+   @GetMapping("/meetings/{schedulerName}")
+public ResponseEntity<List<MeetingDTO>> GetAllMeetingOfScheduler(
+@PathVariable
+@Pattern(regexp="([a-zA-Z]+)(\\s[a-zA-Z]+)*", message="{meeting.scheduler.invalid}")
+String schedulerName
+)throws MeetingSchedulerException{
+List<MeetingDTO> meetingList=meetingService.getAllMeetingsOfScheduler(schedulerName);
+return new ResponseEntity<>(meetingList,HttpStatus.OK);
+}
+
+@PostMapping("/meetings")
+public ResponseEntity<MeetingDTO> scheduleMeeting(@Valid @RequestBody MeetigDTO meetingDetails) throws MeetingSchedulerException{
+MeetingDTO meetingObject=meetingService.scheduleMeeting(meetingDetails);
+return new ResponseEntity<>(meetingObject,HttpStatus.CREATED);
+}
+}
