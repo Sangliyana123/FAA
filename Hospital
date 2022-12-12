@@ -1,11 +1,11 @@
 ------Validator------
 public static void validatePatient(PatientDTO patientDTO) throws PatientAdmissionException{
-if(!isValidDateOfBirth(patientDTO.getDateOfBirth())
+if(!isValidDateOfBirth(patientDTO.getDateOfBirth()))
   {
-throw new PatientAdmissionException("PatientValidator.INVALID_DOB")
+throw new PatientAdmissionException("PatientValidator.INVALID_DOB");
   }
 }
-public static Boolean isValiDateOfBirth(LocalDate dateOfBirth) throws PatientAdmissionException{
+public static Boolean isValidDateOfBirth(LocalDate dateOfBirth) throws PatientAdmissionException{
 if(dateOfBirth.isAfter(LocalDate.now()))
 {
 return false;
@@ -64,9 +64,9 @@ return patientDTO;
 
 }
 
----------Service--------
+---------API--------
 @GetMapping(value="/patients/{diagnosis}")
-public ResponseEntity<List<PatientDTO>> getPatientsDiagnosis{
+public ResponseEntity<List<PatientDTO>> getPatientsDiagnosis(
 @PathVariable @Pattern(regexp="[a-zA-Z0-9\s]+",message="{patient.diagnosis.invalid}") String diagnosis)
 throws PatientAdmissionException{
 
@@ -78,6 +78,6 @@ return new ResponseEntity<>(pDtol, HttpStatus.OK);
 public ResponseEntity<PatientDTO> admitPatient(PatientDTO patientDTO) throws PatientAdmissionException{
  
 PatientDTO pDto2=patientService.admitPatient(patientDTO);
-return new Responsentity<>(pDto2,HttpStatus.CREATED);
+return new ResponseEntity<>(pDto2,HttpStatus.CREATED);
 }
 }
