@@ -32,7 +32,7 @@ return new ResponseEntity<>(studentdto1,HttpStatus.OK);
 }
 
 --------Repository---------
-nes (4 sloc)  232 Bytes
+
 
 public interface StudentRepository extends CrudRepository<Student,integer>
 public Optional<Student> findByEmail(String emailId);
