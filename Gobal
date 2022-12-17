@@ -4,8 +4,8 @@ if (! isValidIntakeYear(studentDTO.getIntakeyear())){
 throw new GlobalEducationException("StudentValidator.INVALID_INTAKE_YEAR");
 }
 }
-public static Boolean isValidIntakeyear(Integer intake){
-if (intake<Localdate.noe().getyear()){
+public static Boolean isValidIntakeYear(String intakeYear){
+if (intakeYear<LocalDate.now().getYear()){
 retur false;
 }
 else{
