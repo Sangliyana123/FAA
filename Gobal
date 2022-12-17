@@ -1,6 +1,6 @@
 -----------Validator--------
-public static void validateStudent(StudentDTO studentDTO) throws GlobalEducationExcetion{
-if (! isValidIntakeYear(studentDTO.getIntakeyear())){
+public static void validateStudent(StudentDTO studentDTO) throws GlobalEducationException{
+if (! isValidIntakeYear(studentDTO.getIntakeYear())){
 throw new GlobalEducationException("StudentValidator.INVALID_INTAKE_YEAR");
 }
 }
