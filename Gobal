@@ -4,16 +4,23 @@ if (! isValidIntakeYear(studentDTO.getIntakeYear())){
 throw new GlobalEducationException("StudentValidator.INVALID_INTAKE_YEAR");
 }
 }
-public static Boolean isValidIntakeYear(String intakeYear){
+public static Boolean isValidIntakeYear(Integer intakeYear){
 if (intakeYear<LocalDate.now().getYear()){
-retur false;
+return false;
 }
 else{
-retur true;
+return true;
+}
 }
 }
 
 --------API-----------
+@RestController
+@RequestMapping(value="/global-edu")
+@Validated
+
+@Autowired
+
 @PostMapping(value="/student")
 public ResponseEntity<StudentDTO> registerStudent(@Valid @RequestBody StudentDTO studentDTO)
   throws GlobalEducatonException{
