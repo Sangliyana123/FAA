@@ -66,7 +66,7 @@ return patientDTO;
 
 ---------API--------
 @GetMapping(value="/patients/{diagnosis}")
-public ResponseEntity<List<PatientDTO>> getPatientsDiagnosis(
+public ResponseEntity<List<PatientDTO>> getPatientsByDiagnosis(
 @PathVariable @Pattern(regexp="[a-zA-Z0-9\s]+",message="{patient.diagnosis.invalid}") String diagnosis)
 throws PatientAdmissionException{
 
