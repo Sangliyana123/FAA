@@ -1,12 +1,13 @@
 ----------Validator--------------
 pubic static void validate(MovieBookingDTO movieBookingDTO) throws MovieBookingException{
 if(Boolean.FALSE.equals(isValidCustomerPhoneNo(movieBookingDTO.getCustomerPhoneNo()))){
+throw new MovieBookingException("Validator.INVALID_CUSTOMER_PHONE_NO");
 }
-if (Bollean.FLASE.equals(isvalipaymentType(movieBookingDTO.getPaymentType())))
+if (Boolean.FLASE.equals(isValidPaymentType(movieBookingDTO.getPaymentType())))
 throw new MovieBookingException("Validator.INVALID_PAYMENT_TYPE");
 }
 }
-public static Bollean isValidPaymentType(String paymentType){
+public static Boolean isValidPaymentType(String paymentType){
 String paymentType1="Card";
 String paymentType2="Wallet";
 String paymentType3="NetBanking";
