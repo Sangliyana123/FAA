@@ -22,7 +22,7 @@ return true;
 
 ----------Repository-------
 public interface PatientRepository extends CrudRepository<Patient, Integer>{
-List<Patient> getPatientByDiagnosis(String diagnosis);
+List<Patient> getPatientBydiagnosis(String diagnosis);
 }
 
 --------Service----------
