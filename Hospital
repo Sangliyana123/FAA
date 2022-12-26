@@ -5,7 +5,7 @@ if(!isValidDateOfBirth(patientDTO.getDateOfBirth()))
 throw new PatientAdmissionException("PatientValidator.INVALID_DOB");
   }
 }
-public static Boolean isValidDateOfBirth(LocalDate dateOfBirth) throws PatientAdmissionException{
+public static Boolean isValidDateOfBirth(LocalDate dateOfBirth) {
 if(dateOfBirth.isAfter(LocalDate.now()))
 {
 return false;
@@ -40,7 +40,7 @@ List<Patient> pList=patientRepository.getPatientBydiagnosis(diagnosis);
 
 if(pList.isEmpty()||pList.size()==0)
 {
-throws new PatientAdmissionexception("PatientService.PATIENT_UNAVAILABLE");
+throws new PatientAdmissionException("PatientService.PATIENT_UNAVAILABLE");
 
 }
 List<PatientDTO> pDTOs=new ArrayList<>();
@@ -53,7 +53,7 @@ return pDTOs;
 @Override
 public PatientDTO admitPatient(PatientDTO patientDTO) throws PatientAdmissionException{
  
-patientValidator.validate(patientDTO);
+PatientValidator.validate(patientDTO);     //.validatePatient
 Patient patient=PatientDTO.prepareEntity(patientDTO);
 
 patient=patientRepository.save(patient);
