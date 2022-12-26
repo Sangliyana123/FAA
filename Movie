@@ -56,12 +56,12 @@ MovieBookingValidator.validate(movieBookingDTO);
 List<MovieBooking> movieBookingList=movieBookingRepository.getBookingDetails(movieBookingDTO.getCustomerPhoneNo(),
         movieBookingDTO.getShowDate());
         
-if (Boolean.FLASE.equals(movieBookigList.isEmpty())){
+if (Boolean.FALSE.equals(movieBookigList.isEmpty())){
 
 throw new MovieBookingException("MovieBookingService.BOOKING_EXISTS");
 }
 MovieBooking movieBooking=MovieBookingDTO.prepareEntity(movieBookingDTO);
-movieBooking.setBookingAmount((calculateBookingAmount(movieBooking.getNoOfSeats(),movieBooking.getScreenName()));
+movieBooking.setBookingAmount(calculateBookingAmount(movieBooking.getNoOfSeats(),movieBooking.getScreenName()));
 Integer movieID =movieBookingRepository.save(movieBooking).getBookingId();
 movieBookingDTO.setBookingId(movieID);
 
@@ -87,7 +87,7 @@ return bookingAmount;
 }
 
 @Override
-public List<MovieBookingDTO> getBookingScreenName(String screenName) throws MovieBookingException{
+public List<MovieBookingDTO> getBookingByScreenName(String screenName) throws MovieBookingException{
 
 List<MovieBooking>movieBookingList=movieBookingReposistory.findByScreenName(screenName);
 if(movieBookingList.isEmpty()){
