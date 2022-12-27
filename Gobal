@@ -84,28 +84,5 @@ public class studentServiceImpl implements StudentService{
    dtos.sort((x1,x2) -> x1.getStudentName().compareTo(x2.getStudentName()));
    return dtos;
    }
-   }
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-	
-   
+ }
    
