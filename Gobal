@@ -49,7 +49,7 @@ public List<Student> findStudentByInterestedCountryAndIntakeYear(String Country,
 
 
 ---------Service---------
-@Service(value="/studentservice")
+@Service(value="/studentService")
 @Transactional
 public class studentServiceImpl implements StudentService{
 
@@ -57,17 +57,16 @@ public class studentServiceImpl implements StudentService{
   private StudentRepository studentRepository;
 
   @override
-  public StudentDTO registerStudent(StudentDTO studentDTO) throws GlobalEducationException{
+  public StudentDTO registerStudent(StudentDTO studentDTO) throws GlobalEducationException {
   StudentValidator.validateStudent(studentDTO);
   Optional<Student>optional= studentRepository.findByEmailId(studentDTO.getEmailId());
 
     if(optional.isPresent()){
-	throw new GlobalEducationException("studentService.STUDENT_ALREADY_EXIST");
+	throw new GlobalEducationException("studentService.STUDENT_ALREADY_EXISTS");
 	}
-   Student std = StudentDTO.prepareEntity(StudentDTO);
+   Student std = StudentDTO.prepareEntity(studentDTO);
    std=studentRepository.save(std);
-   studentDTO.setStudentId(std.getStudentId());
-   
+   studentDTO.setStudentId(std.getStudentId()); 
    return studentDTO;
    }
    
