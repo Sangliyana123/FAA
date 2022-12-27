@@ -30,10 +30,10 @@ return new ResponseEntity<>(studentdto,HttpStatus.CREATED);
 }
 
 @GetMapping(value="/student/{country}/{intakeYear}")
-public ResponseEntity<List<StudentDTO>> findStudentByInterestedCountryAndIntakeYear(@PathVariable String country,
-          @PathVariable @Pattern(regexp="[0-9]{4}",message="{Student.intakeyear.Invalid}") Integer intakeYear)
+public ResponseEntity<List<StudentDTO>> getStudentByCountryAndIntake(@PathVariable String country,
+          @PathVariable @Min(value=1000,message="{Student.intakeyear.Invalid}") Integer intakeYear)
              throws GlobalEducationException{
-List<StudentDTO> studentdto1=studentservice.getStudentByCountryAndIntakeYear(country,intakeYear);
+List<StudentDTO> studentdto1=studentService.getStudentByCountryAndIntake(country,intakeYear);
 return new ResponseEntity<>(studentdto1,HttpStatus.OK);
      }
 }
