@@ -50,75 +50,62 @@ public List<Student> findStudentByInterestedCountryAndIntakeYear(String Country,
 
 ---------Service---------
 @Service(value="/studentservice")
+@Transactional
 public class studentServiceImpl implements StudentService{
 
   @Autowired
-  private StudentRepository studentrepo;
+  private StudentRepository studentRepository;
 
   @override
   public StudentDTO registerStudent(StudentDTO studentDTO) throws GlobalEducationException{
   StudentValidator.validateStudent(studentDTO);
-  Optional<Student>optional= studentrepo.findByEmailId(studentDTO.getEmailId());
-// Student student=optional
-//      .orElseThrow(()-> new GlobalEducationException("StudentService.STUDENT_ALREADY_EXIST"));
-    
+  Optional<Student>optional= studentRepository.findByEmailId(studentDTO.getEmailId());
+
     if(optional.isPresent()){
 	throw new GlobalEducationException("studentService.STUDENT_ALREADY_EXIST");
 	}
+   Student std = StudentDTO.prepareEntity(StudentDTO);
+   std=studentRepository.save(std);
+   studentDTO.setStudentId(std.getStudentId());
+   
+   return studentDTO;
+   }
+   
+   @Override
+   public List<StudentDTO> getStudentByCountryAndIntake(String country, Intiger intakeYear) throws GlobalEducationException {
+   
+   List<Student> std = studentRepository.findStudentByInterestedCountryAndIntakeYear(country, intakeYear);
+   if(std.isEmpty()|| std.size() == 0){
+   throw new GlobalEducationException("StudentService.NO_STUDENTS_FOUND");
+   }
+   
+   List<StudentDTO> dtos = new ArrayList<>();
+   std.stream().forEach(x-> dtos.add(new StudentDTO().prepareDTO(x)));
+   dtos.sort((x1,x2) -> x1.getStudentName().compareTo(x2.getStudentName()));
+   return dtos;
+   }
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
 	
-	Student std= dtoToentity(studentDTO);
-	std=studentrepo.save(std);
-	StudentDTO Stu1=entityTodto(std);
-	return stu1;
-    }
-    
-     public Student dtoToentity(StudentDTO dto){
-	Student std=new Student();
-	std.setStudentId(dto.getStudentId());
-        std.setStudentName(dto.getstudentname());
-        std.setEmailId(dto.getEmailId());
-        std.setInterestedCountry(dto.getInterestedCountry());
-        std.setIntakeYear(dto.getIntakeYear());
-        std.setStudyLevel(dto.getStudyLevel());
-        std.setCourseInterested(dto.getCourseInterested());
-	return std;
-  }
-	
-	public StudentDTO entityTodto(Student std){
-	    StudentDTO dto= new StudentDTO();
-            dto.setStudentId(std.getStudentId());
-            dto.setStudentName(std.getstudentname());
-            dto.setEmailId(std.getEmailId());
-            dto.setInterestedCountry(std.getInterestedCountry());
-                        dto.setIntakeYear(std.getIntakeYear());
-            dto.setStudyLevel(std.getStudyLevel());
-            dto.setCourseInterested(std.getCourseInterested());
-	    return dto;
-	}
-    
-        @Override
-        public List<StudentDTO> findStudentByInterestedCountryAndIntakeYear(String country,Integer intakeYear)
-	     throws GlobalEducationException {
-
-	List<Student> std= studentrepo.findStudentByInterestedCountryAndIntakeYear(country,intakeYear);
-	if (std.isEmpty() || std.size() ==0) {
-		throw new GlobalEducationException{"StudentService.NO_STUDENTS_FOUND");
-}
-        List<StudentDTO> dtos = new ArrayList();
-        std.forEach(dto->{
-	StudentDTO dt= new StudentDTO();
-	       dt.setStudent
-               dt.setStudentId(dto.getStudentId());
-               dt.setStudentName(dto.getstudentname());
-              dt.setEmailId(dto.getEmailId());
-             dt.setInterestedCountry(dto.getInterestedCountry());
-             dt.setIntakeYear(dto.getIntakeYear());
-             dt.setStudyLevel(dto.getStudyLevel());
-             dt.setCourseInterested(dto.getCourseInterested());
-	     dtos.add(dt);
-          }
-          );
-          return dtos;
-          }
-          }
+   
    
