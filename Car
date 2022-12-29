@@ -1,0 +1,70 @@
+-----Validator-------
+public static void validate(RentalDTO rental) throws RentACarException {
+
+String errorMsg=null;
+if(Boolean.FALSE.equals(isValidContactNumber(rental.getMobileNumber())))
+  errorMsg="Validator.INVALID_CONTACT";
+if(errorMsg!=null)
+  throw new RentACarException(errorMsg);
+  else
+    errorMsg=null;
+    //throw new RentACarException("Validator.INVALID_CONTACT")
+    }
+    
+    public static Boolean isValidContactNumber(Long contactNumber){
+    return contactNumber.toString().matches("[0-9]{10}");
+    }
+    
+    
+    -----Repository-----
+    public interface RentalRepository extends CrudRepository<Rental,Integer>{
+    List<Rental> findByCarType(String ,carType);
+    }
+    
+    
+    ----API------
+    @PostMapping(value="rent")
+    public ResponseEntity<RentalDTO> rentACar(RentalDTO rentalDTO) throws RentACarException
+    {
+    RentalDTO rdto=rentACarService.rentACar(rentalDTO);
+    retrun new ResposeEntity<>(rdto,HttpStatus.CREATED);
+    }
+    @GetMapping(value="customers/{carType}")
+    public ResponseEntity<List<RentalDTO>> getRentals(@PathVariable
+    @Pattern(regexp="(Automatic|Electric|Manual)",message="{rental.cartype.invalid}" String carType)
+    throws RentACarException
+    {
+    List<RentalDTO> rentalDTOs=rentACarService.getRentalByCarType(car Type);
+    return new ResponseEntity<>(rentalDTOs,HttpStatus.OK);
+    }
+    }
+    
+   -----Service----
+   public class RentAServiceImpl implementsRentACarService
+   {
+   @Autowired
+   private RentalRepository rentalRepository;
+   
+   @Override
+   public RentalDTO rentACar(RentalDTO rentalDTO) throws RentACarException{
+   Validator.validate(rentalDTO);
+   Rental rent=RentalDTO.prepareEntity(rentalDTO);
+   Integer rentId=rentalRepository.save(rent).getRentalId();
+   rent.setRentalId(rentId);
+   return rentalDTO;
+   }
+  
+  @Override
+  public List<RentalDTO> getRentalByCarType(String carType) throws RentACarException{
+  List<Rental> rent=rentalRepository.findByCarType(carType);
+  if(rent.isEmpty())
+    throw new RentACarException("Service.RENTAL_NOT_FOUND");
+   List<RentalDTO> dto=new ArrayList<RentalDTO>();
+   for(Rental rental:rent){
+   RentalDTO rdto=RentalDTO.prepareDTO(rental);
+   dto.add(rdto);
+  
+   }
+   return dto;
+   }
+
