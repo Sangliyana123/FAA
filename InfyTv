@@ -1,0 +1,57 @@
+-----API------
+@RestController
+@RequestMapping(value="")
+@Validated
+
+@PostMapping(value="user")
+public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) throws SeriesBookingException
+{
+Integer id=seriesBookingService.registerUser(userDTO);
+String msg=environment.getProperty("API.REGISTRATION_SUCCESSS")+id;
+return new ResponseEntity<String>(msg,HttpStatus.CREATED);
+}
+
+------Service-----
+@Service("value=seriesBookingService")
+@Transcational
+public class SeriesBookingServiceImpl implements SeriesBookingService{
+@Autowired
+private SeriesRepository seriesRepository;
+@Autowired 
+private UserRepository userRepository;
+
+@Override
+public Integer registerUser(UserDTO userDTO) throws SeriesBookingException
+{
+  Optional<Series> s=seriesRepository.findBySeriesName(userDTO.get)
+
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
