@@ -23,10 +23,39 @@ private UserRepository userRepository;
 @Override
 public Integer registerUser(UserDTO userDTO) throws SeriesBookingException
 {
-  Optional<Series> s=seriesRepository.findBySeriesName(userDTO.get)
+  Optional<Series> s=seriesRepository.findBySeriesName(userDTO.getSeries(),getSeriesName());
+  Series se=s.orElseThrow(()-> new SeriesBookingException("Service.SERIES_NOT-FOUND"));
+  User u =new UserDTO();
+  u.setEmail(userDTO.getUserName());
+  u.setUserName(userDTO.getUserName());
+  u.setSeries(se);
+  return userRepository.save(u).getRegistrationId();
+}
+@Override
+public List<UserDTO> getDetailsByUserEmail(String email) throws SeriesBookingException
+{
+List<User> u=userRepository.findByEmail(email);
+if(u.isEmpty()){
+  throw new SeriesBookingException("Series.NO_DETAILS_FOUND");
+  }
+  List<UserDTO> dto=new ArrayList<>();
+  for(User i:u){
+  UserDTO k=new UserDTO();
+  k.setEmail(i.getEmail());
+  k.setRegistrationId(i.getRegitraionId());
+  k.setUserName(i.getUserName());
+  SeriesDTO s=new SeriesDTO();
+  s.setSeriesId(i.getSeries().getSeriesId());
+  s.setSeriesName(i.getSeries().getSeriesName());
+  s.setSeriesType(i.getSeries().getSeriesType());
+  k.setSeries(s);
+  dto.add(k);
+  }
+  return dto;
+}
 
 }
-}
+
 
 
 
