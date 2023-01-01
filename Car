@@ -31,7 +31,7 @@ if(errorMsg!=null)
     }
     @GetMapping(value="customers/{carType}")
     public ResponseEntity<List<RentalDTO>> getRentals(@PathVariable
-    @Pattern(regexp="(Automatic|Electric|Manual)",message="{rental.cartype.invalid}" String carType)
+    @Pattern(regexp="(Automatic|Electric|Manual)",message="{rental.cartype.invalid}") String carType)
     throws RentACarException
     {
     List<RentalDTO> rentalDTOs=rentACarService.getRentalByCarType(car Type);
