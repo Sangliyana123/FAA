@@ -26,7 +26,7 @@ public Integer registerUser(UserDTO userDTO) throws SeriesBookingException
   Optional<Series> s=seriesRepository.findBySeriesName(userDTO.getSeries(),getSeriesName());
   Series se=s.orElseThrow(()-> new SeriesBookingException("Service.SERIES_NOT-FOUND"));
   User u =new UserDTO();
-  u.setEmail(userDTO.getUserName());
+  u.setEmail(userDTO.getEmail());
   u.setUserName(userDTO.getUserName());
   u.setSeries(se);
   return userRepository.save(u).getRegistrationId();
